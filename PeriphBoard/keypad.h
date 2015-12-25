@@ -4,7 +4,7 @@
 #include "extended_types.h"
 
 void configure_keypad_ports(void);
-void check_key(UINT8* row_dest, UINT8* col_dest);
+void check_key(UINT8* row_dest, UINT8* col_dest, UINT8 row_to_check);
 UINT8 debounce_keypress(void);
 
 #endif

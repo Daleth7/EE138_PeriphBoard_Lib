@@ -4,7 +4,8 @@
 #include "extended_types.h"
 
 void configure_ssd_ports(void);
-void display_dig(
+void display_dig(UINT8 num, UINT8 select);
+void display_dig_spec(
     UINT8 num, UINT8 select,
     BOOLEAN__ show_dot, BOOLEAN__ show_sign
 );

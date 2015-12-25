@@ -33,8 +33,8 @@ void enable_adc_clk(void){
         );
 }
 
-void configure_adc_default(UINT8 ain){
-    configure_adc(
+void configure_adc(UINT8 ain){
+    configure_adc_custom(
         0x2,    // Select a V_DD_AN/2 (1.65) reference
         0x8,    // Now collect 256 samples at a time.
                 //  Theoretical result has 20-bit precision.
@@ -55,7 +55,7 @@ void configure_adc_default(UINT8 ain){
         );
 }
 
-void configure_adc(
+void configure_adc_custom(
     UINT8 ref, UINT8 samp_rate, UINT8 samp_time, UINT8 presc,
     UINT8 ressel, UINT8 gain, UINT8 neg_ain, UINT8 ain
 ){
@@ -128,15 +128,11 @@ void enable_dac_clk(void){
         );
 }
 
-void configure_dac_default(void){
-    configure_dac(0x1);
-
-	dac_ptr->CTRLB.reg |= 0x1;  // Enable DAC output to Vout
-
-	while (dac_ptr->STATUS.reg & DAC_STATUS_SYNCBUSY);
+void configure_dac(void){
+    configure_dac_custom(0x1);
 }
 
-void configure_dac(UINT8 ref){
+void configure_dac_custom(UINT8 ref){
     configure_global_ports();
     enable_dac_clk();
     dac_ptr = dac;

@@ -13,13 +13,17 @@ extern PortGroup* bankA, *bankB;
 extern Adc* adc;
 extern Dac* dac;
 
-    // Timers
-    // timerX refers to TcX while timerX_Y refers to TcX Y-bit counter
+    /*  Timers
+        As a rule, pointers to TcCountN structures will follow
+        the convention: timer#S_#B
+            - #S refers to TC#S, or a TC set
+            - #B refers to the bit-size of the counter (*TC#S)->COUNT#B
+    */
 extern Tc* timer2_set, *timer4_set, *timer6_set, *timer7_set;
     // Be careful with TcCount instances since they are part of a union in Tc
 extern TcCount8* timer2_8;
-extern TcCount8* timer4_8;
 extern TcCount16* timer2_16;
+extern TcCount8* timer4_8;
 extern TcCount8* timer6_8;
 extern TcCount8* timer7_8;
 extern TcCount16* timer7_16;

@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 
+#define INT8    int8_t
+#define INT16   int16_t
 #define INT32   int32_t
 #define UINT32  uint32_t
 #define UINT16  uint16_t

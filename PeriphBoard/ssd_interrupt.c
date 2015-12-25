@@ -8,6 +8,10 @@ static TcCount16* disp_timer;
 UINT8 display_number[DISPLAY_DIGIT_SIZE_MAX] = {-1, -1, -1, -1};
 static UINT8 display_base = 10;
 
+double display_period(void){
+    return disp_timer->CC[0].reg/500000.0;
+}
+
 void update_display_base(UINT8 new_base){
     if(new_base > 1 && new_base < 17)   display_base = new_base;
 }
@@ -51,28 +55,28 @@ void configure_display_timer(void){
         // Set up timer 7 settings
     disp_timer->CTRLA.reg |=
           (0x1 << 12u)  // Set presynchronizer to prescaled clock
-        | (0x4 << 8u)   // Prescale clock by 16
+        | (0x6 << 8u)   // Prescale clock by 256
         | (0x0 << 2u)   // Start in 16-bit mode
         | (0x1 << 5u)   // Select the Match Frequncy waveform generator
                         //  Allow control over refresh speed and brightness
         ;
-    disp_timer->CC[0].reg = 0xF0;
+    disp_timer->CC[0].reg = 75;
 
         // Set up timer 7 interrupt
     NVIC->ISER[0] |= 1 << 20u;
+    NVIC->IP[5] |= (0x2 << 6u);
     disp_timer->INTENSET.reg |= 1 << 4u;
     disp_timer->INTFLAG.reg |= 0x1 << 4u;
 }
 
-void display_handler(void){
-    static UINT8 dig = 0;
-    if(disp_timer->INTFLAG.reg & (0x1 << 4u)){
-        display_dig(display_number[DISPLAY_DIGIT_SIZE_MAX-1-dig], dig, FALSE__, FALSE__);
-        dig = (dig == DISPLAY_DIGIT_SIZE_MAX-1) ? 0 : (dig+1);
-        disp_timer->INTFLAG.reg |= 0x1;
-    }
+BOOLEAN__ display_interrupted(void){
+    return disp_timer->INTFLAG.reg &= 0x1;
 }
 
-void TC7_Handler(void){
-    display_handler();
+void clear_display_interrupt(void){
+    disp_timer->INTFLAG.reg |= 0x1;
+}
+
+void display_handler(UINT8 select){
+    display_dig(display_number[DISPLAY_DIGIT_SIZE_MAX-1-select], select);
 }

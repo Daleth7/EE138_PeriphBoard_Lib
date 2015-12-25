@@ -21,22 +21,14 @@ void configure_keypad_ports(void){
     }
 }
 
-void check_key(UINT8* row_dest, UINT8* col_dest){
-    static UINT8 cur_row = 0u;
+void check_key(UINT8* row_dest, UINT8* col_dest, UINT8 row_to_check){
     // Provide power to one specific row
     key_bankA->OUT.reg |= 0x000000F0;
-    key_bankA->OUT.reg &= ~(1u << (4u + cur_row));
+    key_bankA->OUT.reg &= ~(1u << (4u + row_to_check));
         // Extract the four bits we're interested in from
         //   the keypad.
     if(!IS_NULL(col_dest))  *col_dest = debounce_keypress();
-    if(!IS_NULL(row_dest))  *row_dest = cur_row;
-
-        // Prepare for the next row. If we were on the last
-        //  row, cycle back to the first row.
-        // Take modulous to retrieve current value of cur_row when
-        //  we were not on the last row. If that is the case,
-        //  reset row_bit to 0.
-    cur_row = (cur_row+1u)%4u;
+    if(!IS_NULL(row_dest))  *row_dest = row_to_check;
 }
 
 UINT8 debounce_keypress(void){
@@ -54,16 +46,16 @@ UINT8 debounce_keypress(void){
         else    already_on = (toreturn >> counter) & 0x1;
     }
 
-    if(!toreturn)   return 0x0;
+    if(!toreturn)   return 0x10;
 #define MAX_JITTER  5
-#define MAX_JITTER2 1000
-#define RELEASE_LIM 7500
+#define MAX_JITTER2 2500
+#define RELEASE_LIM 11250
 
     // First, read up to MAX_JITTER times to swallow spikes as button is
     //  pressed. If no key press was detected in this time, the noise is
     //  not from a button press.
     for(counter = 0x0; counter < MAX_JITTER; ++counter){
-        if(!((key_bankA->IN.reg >> 16u) & 0xF))    return 0x0;
+        if(!((key_bankA->IN.reg >> 16u) & 0xF))    return 0x10;
     }
 
     // Now swallow the spikes as the button is released. Do not exit
@@ -82,5 +74,6 @@ UINT8 debounce_keypress(void){
     return toreturn;
 
 #undef MAX_JITTER
+#undef MAX_JITTER2
 #undef RELEASE_LIM
 }

@@ -1,6 +1,7 @@
 #include "utilities.h"
 
 UINT32 find_lsob(UINT32 target){
+    if(target == 0) return -1;
     UINT32 toreturn = 0u;
     while(!(target & 0x1)){
         ++toreturn;
